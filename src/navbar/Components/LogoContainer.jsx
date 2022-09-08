@@ -24,7 +24,7 @@ function LogoContainer() {
           title="Menu"
           closable={false}
           placement="left"
-          visible={visible}
+          open={visible}
           autoFocus={false}
           maskClosable={!visible}>
       </Drawer>

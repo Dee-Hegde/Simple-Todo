@@ -1,42 +1,36 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import CustomComponents from '../../constants/CustomComponents';
-import { Button, DatePicker, Input, TimePicker } from 'antd';
-
-
-const payload={
-    status:false,
-    isSaved:false,
-    id:uuid()
-  }
+import { Button, Col, DatePicker, Input, Row, Switch, TimePicker } from 'antd';
 
 function AddTask(props) {
-    const {visible,setVisible,selectedTask,setTodo,todo}=props;
-    const [title,setTitle]=useState("");
-    const [date,setDate]=useState("");
-    const [time,setTime]=useState("")
+    const {visible,setVisible,selectedTask,setSelectedTask,setTodo,todo}=props;
+    const [title,setTitle]=useState(null);
+    const [date,setDate]=useState(null);
+    const [time,setTime]=useState(null);
+    const [status, setStatus]=useState(false)
     const modalTitle= selectedTask?"Edit Task":"Add New Task";
-
+    
     const addOrEdit=()=>{
         if (selectedTask) {
             let temp=todo.map((item)=>item.id===selectedTask.id ? ({...item, 
-                title,
-                date,
-                time, 
+                title:title,
+                date:date,
+                time:time, 
+                status,
                 lastupdated:moment.now(),
             }):(item))
            setTodo(temp);
-           setTitle("");
-            setTime("");
-            setDate("");
+           setVisible(false);
+           setSelectedTask(null);
+          
           } else {
             const payload={
                 title,
                 date,
                 time,
-                isSaved:false,
-                status:false,
+                status,
                 id:uuid(),
                 lastupdated:moment.now(),
                 createdAt:moment.now(),
@@ -45,12 +39,25 @@ function AddTask(props) {
             setTodo((pre)=>[...pre,payload]);
             setVisible(false);
             setTitle("");
-            setTime("");
             setDate("");
+            setTime("");
           }
     }
 
-    
+    useLayoutEffect(() => {
+      if(selectedTask){
+            setTitle(selectedTask.title);
+            setDate(selectedTask.date);
+            setTime(selectedTask.time)
+            setStatus(selectedTask.status)
+          }
+     else{
+      setTitle("");
+      setDate("");
+      setTime("");
+      setStatus(false)
+     }
+    }, [selectedTask])
   return (
     <div>
     <CustomComponents
@@ -68,15 +75,57 @@ function AddTask(props) {
           </Button>
       </>
     }>
+      <Row style={{marginBottom:"20px"}}>
+        <Col span={3}>
+        <span>Title</span>
+        </Col>
+        <Col span={15}>
         <Input
-            onChange={setTitle}
+        value={title}
+        onChange={(e)=>setTitle(e.target.value)}
         />
+        </Col>
+      </Row>
+      <Row style={{marginBottom:"20px"}}>
+        <Col span={3}>
+        <span>Date</span>
+        </Col>
+        <Col span={15}>
         <DatePicker
+        value={date}
         onChange={setDate}
         />
+        </Col>
+      </Row>
+      <Row style={{marginBottom:"20px"}}>
+        <Col span={3}>
+        <span>Time</span>
+        </Col>
+        <Col span={15}>
         <TimePicker
+        use12Hours
+        value={time}
+        format={"h:mm a"}
+        showNow={false}
         onChange={setTime}
         />
+        </Col>
+      </Row>
+      <Row style={{marginBottom:"20px"}}>
+        <Col span={3}>
+        <span>Status</span>
+        </Col>
+        <Col span={15}>
+        <Switch
+        checked={status}
+        onChange={setStatus}
+        />
+        </Col>
+      </Row>
+       
+       
+       
+
 
     </CustomComponents>
     </div>

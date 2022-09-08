@@ -1,7 +1,7 @@
-import { Button, Card, Col, Row } from "antd";
+import { Button, Card, Row } from "antd";
 import React, { useState } from "react";
-import { cardsData } from "../constants/commonFunctions";
 import AddTask from "./components/AddTask";
+import TaskTable from "./components/TaskTable";
 
 
 
@@ -10,16 +10,13 @@ function Home() {
 const [todo,setTodo]=useState([]);
 const [visible,setVisible]=useState(false);
 const [selectedTask,setSelectedTask]=useState(null);
-
-console.log(todo)
-
-
+const completedTask=todo.filter((item)=>item.status===true)
   return (
     <Row>
       <Row style={{ width: "100vw", justifyContent: "space-between" }}>
         <h2 style={{ marginLeft: "20px" }}>Todo</h2>
         <Button style={{ marginRight: "20px" }}
-        onClick={()=>setVisible(true)}
+        onClick={()=>{setVisible(true); setSelectedTask(null)}}
         >+Add New</Button>
       </Row>
 
@@ -44,7 +41,7 @@ console.log(todo)
             }}
           >
             <h3>Completed tasks</h3>
-            <h3>{todo.length}</h3>
+            <h3>{completedTask.length}</h3>
           </Card>
           <Card
             style={{
@@ -52,15 +49,25 @@ console.log(todo)
             }}
           >
             <h3>Inprogress tasks</h3>
-            <h3>{todo.length}</h3>
+            <h3>{todo.length-completedTask.length}</h3>
           </Card>
-
-
       </Row>
-      <AddTask
+
+        <Row style={{width:"100%",marginLeft:"20px",marginTop:"20px"}}>
+        <TaskTable
+      style={{width:"100%"}}
+      todo={todo}
+      setTodo={setTodo}
+      setSelectedTask={setSelectedTask}
+      setVisible={setVisible}
+
+      />
+        </Row>
+        <AddTask
       visible={visible}
       setVisible={setVisible}
       selectedTask={selectedTask || null}
+      setSelectedTask={setSelectedTask}
       setTodo={setTodo}
       todo={todo}
       />
