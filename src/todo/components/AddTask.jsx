@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import CustomComponents from '../../constants/CustomComponents';
@@ -9,11 +9,26 @@ function AddTask(props) {
     const [title,setTitle]=useState(null);
     const [date,setDate]=useState(null);
     const [time,setTime]=useState(null);
-    const [status, setStatus]=useState(false)
+    const [status, setStatus]=useState(false);
+    const [error, handleError]=useState({titleErr:null,dateErr:null,timeErr:null})
     const modalTitle= selectedTask?"Edit Task":"Add New Task";
     
-    const addOrEdit=()=>{
-        if (selectedTask) {
+    const addOrEdit=useCallback(() =>{
+      let titleErr= null;
+      let dateErr= null;
+      let timeErr= null;
+      if(title === null || title?.trim() === ""){
+        titleErr="title cannot be empty"
+      }
+      if(date ===null || date === ""){
+        dateErr="date cannot be blank"
+      }
+      if(time ===null || time ===""){
+        timeErr="time cannot be blank"
+      }
+      handleError({titleErr:titleErr,dateErr:dateErr,timeErr:timeErr});
+
+      if (selectedTask && title && date && time) {
             let temp=todo.map((item)=>item.id===selectedTask.id ? ({...item, 
                 title:title,
                 date:date,
@@ -24,8 +39,10 @@ function AddTask(props) {
            setTodo(temp);
            setVisible(false);
            setSelectedTask(null);
+           handleError({titleErr:null,dateErr:null,timeErr:null});
           
-          } else {
+          }
+           else if(!selectedTask && title && date && time) {
             const payload={
                 title,
                 date,
@@ -41,23 +58,27 @@ function AddTask(props) {
             setTitle("");
             setDate("");
             setTime("");
-          }
-    }
+            setStatus(false);
+            handleError({titleErr:null,dateErr:null,timeErr:null});
+          } 
+  },)
 
     useLayoutEffect(() => {
       if(selectedTask){
             setTitle(selectedTask.title);
             setDate(selectedTask.date);
-            setTime(selectedTask.time)
-            setStatus(selectedTask.status)
+            setTime(selectedTask.time);
+            setStatus(selectedTask.status);
+            handleError({titleErr:null,dateErr:null,timeErr:null});
           }
      else{
       setTitle("");
       setDate("");
       setTime("");
-      setStatus(false)
+      setStatus(false);
+      handleError({titleErr:null,dateErr:null,timeErr:null});
      }
-    }, [selectedTask])
+    }, [visible,selectedTask])
   return (
     <div>
     <CustomComponents
@@ -82,8 +103,9 @@ function AddTask(props) {
         <Col span={15}>
         <Input
         value={title}
-        onChange={(e)=>setTitle(e.target.value)}
+        onChange={(e)=>{setTitle(e.target.value); handleError({...error, titleErr:null})}}
         />
+         <Row>{error.titleErr}</Row>
         </Col>
       </Row>
       <Row style={{marginBottom:"20px"}}>
@@ -93,8 +115,9 @@ function AddTask(props) {
         <Col span={15}>
         <DatePicker
         value={date}
-        onChange={setDate}
+        onChange={(e)=>{;setDate(e);handleError({...error, dateErr:null})}}
         />
+         <Row>{error.dateErr}</Row>
         </Col>
       </Row>
       <Row style={{marginBottom:"20px"}}>
@@ -107,8 +130,9 @@ function AddTask(props) {
         value={time}
         format={"h:mm a"}
         showNow={false}
-        onChange={setTime}
+        onChange={(e)=>{setTime(e);handleError({...error, timeErr:null})}}
         />
+        <Row>{error.timeErr}</Row>
         </Col>
       </Row>
       <Row style={{marginBottom:"20px"}}>
