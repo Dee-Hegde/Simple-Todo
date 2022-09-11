@@ -1,22 +1,39 @@
-import { Button } from 'antd'
+import { Button, Col, Row } from 'antd'
 import React from 'react'
 
-function Keybord() {
+function Keybord(props) {
+  const {str,setStr,ans}=props
     const keyboard=[
-        {id:"1",title:"1",value:1},
-        {id:"2",title:"2",value:2},
-        {id:"3",title:"3",value:3},
-        {id:"4",title:"4",value:4},
-        {id:"5",title:"5",value:5},
-        {id:"6",title:"6",value:6},
-        {id:"7",title:"7",value:7},
-        {id:"8",title:"8",value:8},
-        {id:"9",title:"9",value:9},
-        {id:"0",title:"0",value:0},
+        {id:"1",value:"1"},
+        {id:"2",value:"2"},
+        {id:"3",value:"3"},
+        {id:"4",value:"4"},
+        {id:"5",value:"5"},
+        {id:"6",value:"6"},
+        {id:"7",value:"7"},
+        {id:"8",value:"8"},
+        {id:"9",value:"9"},
+        {id:"0",value:"0"},
+        {id:"+",value:"+"},
+        {id:"-",value:"-"},
+        {id:"*",value:"*"},
+        {id:"/",value:"/"},
     ]
+  const handleStr=(e)=>{
+    console.log(e)
+  }
   return (
     <div>
-     {keyboard.map((item)=><Button type="primary" shape="round"  size={"large"} >{item.title}</Button>)}
+      <Row>
+     {keyboard.map((item)=>
+     <Col key={item.id}><Button 
+     type="primary" 
+     shape="round"  
+     size={"large"} 
+     onClick={()=>{setStr(pre=>pre+item.value)}}
+     >{item.value}</Button></Col>)}
+     <Button onClick={()=>ans()}>=</Button>
+     </Row>
     </div>
   )
 }
